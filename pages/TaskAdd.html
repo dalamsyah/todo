@@ -1,0 +1,19 @@
+<md-content flex layout-padding ng-controller="TaskCtrl">
+
+		<md-content class="md-no-momentum">
+			<form class="" ng-submit="saveTodo(todo)">
+			    <md-input-container class="md-block">
+			      <input ng-model="todo.task" type="text" placeholder="Task (required)" ng-required="true">
+			    </md-input-container>
+
+			    <md-input-container class="md-block">
+			      <input ng-model="todo.keterangan" type="text" placeholder="Keterangan (required)" ng-required="true">
+			    </md-input-container>
+			    <section layout="column" layout-align="center center">
+			      <md-button type="submit" class="md-raised md-primary md-hue-1" style="width: 100%">Button</md-button>
+			    </section>
+		    </form>
+	  	</md-content>
+ 
+
+</md-content>

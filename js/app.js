@@ -1,6 +1,8 @@
-var app = angular.module('MyApp', ['ngMaterial', 'ngMdIcons']);
+var app = angular.module('MyApp', ['ngMaterial', 'ngMdIcons', 'ngMessages', 'ngRoute', 'firebase']);
+var firebaseUrl = "https://todo-b8321.firebaseio.com/";
 
-  app.controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+
+app.controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $firebaseArray, $location, $routeParams) {
     $scope.toggleLeft = buildDelayedToggler('left');
 
     $scope.toggleSidenav = function(menuId) {
@@ -19,13 +21,13 @@ var app = angular.module('MyApp', ['ngMaterial', 'ngMdIcons']);
       icon: 'group'
     },
     {
-      link : '/messages',
+      link : 'messages',
       title: 'Messages',
       icon: 'message'
     }
   ];
 
-    /**
+      /**
      * Supplies a function that will continue to operate until the
      * time is up.
      */
@@ -68,22 +70,13 @@ var app = angular.module('MyApp', ['ngMaterial', 'ngMdIcons']);
           });
       };
     }
-  })
-  .controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-    $scope.close = function () {
-      // Component lookup should always be available since we are not using `ng-if`
-      $mdSidenav('left').close()
-        .then(function () {
-          $log.debug("close LEFT is done");
-        });
-
-    };
   });
 
 
+/*================== theming ==========================*/
 app.config(function($mdThemingProvider) {
 
-  $mdThemingProvider.theme('default')
+  /*$mdThemingProvider.theme('default')
     .primaryPalette('green', {
       'default': '400', // by default use shade 400 from the pink palette for primary intentions
       'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
@@ -96,28 +89,18 @@ app.config(function($mdThemingProvider) {
       'default': '200' // use shade 200 for default, and keep all other shades the same
     });
 
+    $mdThemingProvider.enableBrowserColor({
+      palette: 'accent', // Default is 'primary', any basic material palette and extended palettes are available
+      hue: '200' // Default is '800'
+    });
+*/  
     $mdThemingProvider.theme('input', 'default')
         .primaryPalette('grey')
 
 });
 
-/*app.config(function($mdThemingProvider) {
-  var customBlueMap =     $mdThemingProvider.extendPalette('light-blue', {
-    'contrastDefaultColor': 'light',
-    'contrastDarkColors': ['50'],
-    '50': 'ffffff'
-  });
-  $mdThemingProvider.definePalette('customBlue', customBlueMap);
-  $mdThemingProvider.theme('default')
-    .primaryPalette('customBlue', {
-      'default': '500',
-      'hue-1': '50'
-    })
-    .accentPalette('pink');
-  $mdThemingProvider.theme('input', 'default')
-        .primaryPalette('grey')
-});*/
 
+/*======================= directive ============================*/
 app.directive('userAvatar', function() {
   return {
     replace: true,
@@ -125,24 +108,45 @@ app.directive('userAvatar', function() {
   };
 });
 
-/*app.config(function($routeProvider){
+
+/*======================= route ==================================*/
+app.config(function($routeProvider, $locationProvider){
   $routeProvider
   .when('/dashboard', {
-    template: '<center><h1> Welcome to your dashboard! </h1></center>',
-    controller: function(){
-      console.log('dashboard controller');
-    }
+    templateUrl : 'pages/dashboard.html'
   })
-  .when('/friends', {
-    template: '<center><h1>  Your friends area!</h1></center>',
-    controller: function(){
-      console.log('friends controller');
-    }
+  .when('/add', {
+    templateUrl : 'pages/taskAdd.html'
   })
-  .when('/messages', {
-    template: '<center><h1>All your messages.</h1></center>',
-    controller: function(){
-      console.log('messages controller');
-    }
-  })
-});*/
+  $routeProvider.otherwise({redirectTo: '/dashboard'});
+
+});
+
+app.run(function($rootScope, $route, $location) {
+    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+          
+      /*if($location.path() == "/add"){
+        $rootScope."title" = "Task Add";
+        console.log(tess);
+      }else{
+        $rootScope.title = "Dashboard";
+        console.log("tess");
+      }*/
+
+      if(next == undefined){
+        $rootScope.title = "Dashboard";
+      }else{
+
+        if(next.originalPath == "/dashboard"){
+          $rootScope.title = "Dashboard";
+        }else{
+          $rootScope.title = "Add Task";
+        }
+        
+        //console.log(next.originalPath);        
+      }
+
+
+    });
+
+});
